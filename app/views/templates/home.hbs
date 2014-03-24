@@ -1,0 +1,60 @@
+<div class="container">
+
+	<div class="form-signin">
+
+		<form class="form-horizontal" id="login-form">
+			<h2>Connivence</h2>
+			<p>Collaborate with fun!</p>
+			<br><br>
+			<div class="control-group">
+		    	
+
+		    	<!-- Left part: image -->
+				<span class="login-user-avatar" id="login-user-avatar-id">
+                	<img class="login-user-avatar-image" src="" height="148" width="148" style="margin-left: 0px; margin-top: 0px;">
+
+        		</span>
+
+        		<!-- Right part: User settings -->
+        		<span class="info-user">
+    				<label for="exampleInputEmail1">Choose a nickname</label>
+        			<input type="text" id="inputNickname" placeholder="Enter a nickname" class="form-control input-sm" />
+					<br><br>
+        			<label for="exampleInputEmail1">Select the media to use</label>
+        			<div class="btn-group filterCapability space">
+		            	<i class="dropdown-arrow dropdown-arrow-inverse"></i>
+		           	 	<button class="btn btn-primary btn-small filterLabel selectedCapability" data-capabilities="full">Audio + Video</button>
+		           	 	<button class="btn btn-primary btn-small dropdown-toggle clearfix" data-toggle="dropdown">
+		                	<span class="caret"></span>
+		            	</button>
+		            	<ul class="dropdown-menu dropdown-inverse">
+		                	<li class="l-full selected"><a href="" data-capabilities="full" data-text="Audio + Video" class="full capabilitySelector">Audio + Video</a></li>
+		                	<li class="l-audio"><a href="" data-capabilities="audio" data-text="Audio Only" class="audio capabilitySelector">Audio Only</a></li>
+		                	<li class="l-video"><a href="" data-capabilities="video" data-text="Video Only" class="video capabilitySelector">Video Only</a></li>
+		            	</ul>
+		        	</div>
+        		</span>
+
+        		<br><br><hr><br>
+
+        		<!-- Bottom left part: Create a new conference -->
+        		<!-- Right part: User settings -->
+        		<span class="new-conference">
+        			<label for="exampleInputEmail1">Choose a conference title</label>
+        			<input type="text" id="inputTitle" placeholder="Enter a title" class="form-control input-sm conferenceInput" />
+        			<br><br>
+        			<button class="btn btn-info conferenceButtonCreate" type="action" id="joinNewButton" disabled>Create</button>
+        		</span>
+
+        		<span class="existing-conference">
+        			<label for="exampleInputEmail1">Join an existing conference</label>
+        			<input type="text" id="inputCode" placeholder="Enter an access code" class="form-control input-sm conferenceInput" />
+        			<br><br>
+        			<button class="btn btn-inverse conferenceButtonCreate" type="action" id="joinExistingButton" disabled>Join</button>
+        		</span>
+            
+		</form>
+    	
+	</div>
+
+</div>

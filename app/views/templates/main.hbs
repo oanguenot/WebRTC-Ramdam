@@ -1,0 +1,50 @@
+<div class="wrapper">
+	<div class="header">
+		<span class="title">Conference</span>
+		<span class="desktopSharingButton touchButton unselectedTab">&gt;</span>
+	</div>
+
+	<div id="wrapmiddle" class="wrapmiddle">
+		<div id='no-participant' class="no-participant">Waiting for participant to connect...</div>
+		<div id="stage" class="middle">
+		</div>
+	</div>
+
+
+
+	<div class="left">
+		<span id="me" class="participant"></span>
+		<ul id="participants" class="participants"></ul>
+	</div>
+
+	<div id="data" class="right">
+		<span id="imButton" class="imButton touchButton selectedTab">IM</span>
+		<span id="fileButton" class="fileButton touchButton unselectedTab">FILES</span>
+		<div class="clear"></div>
+		<ul id="dataList" class="dataList">
+		</ul>
+		<ul id="fileList" class="dataList hiddenList">
+		</ul>
+		<div id="bottom" class="bottom">
+			<form class="chatForm">
+				<input id="chatEditor" type="text" placeholder="Enter something you want to say..." class="form-control chatInput" />
+				<span id="sendButton" class="sendButton touchButton">SEND</span>
+				<button class="btn btn-block btn-info" type="action" id="joinButton" disabled style="display:none">Join</button>
+			</form>
+
+			<div class="fileUpload fileUploadButton touchButton hiddenList">
+	    		<span>UPLOAD</span>
+	    		<input type="file" class="upload" id="fileselect" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--
+<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
+<button class="btn btn-block btn-info" type="action" id="testButton">SEND</button>
+ -->
+<!--
+<div class="pingme"></div>
+<div class="pingmeText">Video Web Conference</div>
+-->

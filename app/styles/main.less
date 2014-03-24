@@ -1,0 +1,285 @@
+header {
+	
+	height: 94px;
+	margin-bottom: 30px;
+	background: #4277b7 url('http://i.imgur.com/Pm5hf.png') repeat-x;
+	
+	h1 {
+		text-indent: -9999px;
+		background: url('http://i.imgur.com/t5AI4.png') no-repeat center;
+		width: 500px;
+		height: 94px;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+@media (max-width: 767px) {
+	
+	// make the header span the entire page width even on small screens
+	header {
+		margin-left: -20px;
+		margin-right: -20px;
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	
+}
+
+@media (max-width: 540px) {
+	
+	// when the page is too narrow for the 500px logo, switch to a smaller, 300px version (also center it)
+	header h1 {
+		background: url('http://i.imgur.com/8LfcwUs.png') no-repeat center;
+		width: 100%;
+	}
+}
+
+body {
+	overflow: hidden;
+}
+
+.title {
+	color: #ffffff;
+	line-height: 45px;
+	text-align: left;
+	font-size: 16px;
+	font-family: ClanOT-News;
+	padding-left: 10px;
+}
+
+.desktopSharingButton {
+	position: relative;
+	float: right;
+	height: 28px;
+	width: 28px;
+	text-align: center;
+	font-family: ClanOT-News;
+	font-size: 16px;
+	line-height: 28px;
+	border-radius: 14px;
+	color: #ffffff;
+	margin-right: 10px;
+	margin-top: 7px;
+}
+
+.header {
+ 	float: left;
+   	width: 100%;
+	height: 45px;
+	background-color: #4b4f56;
+	text-align: left;
+	margin-bottom: 10px;
+}
+
+.no-participant {
+	margin-right: 400px;
+	margin-left: 183px;
+	margin-top: 31px;
+	padding-top: 100px;
+	margin-bottom: 100px;
+	background-color: #4b4f56;
+	text-align: center;
+	line-height: 90px;
+	color: #ffffff;
+	font-family: ClanOT-News;
+	font-size: 12px;
+}
+
+.wrapper{
+	width: 100%;
+	margin: 0 auto;
+}
+
+.wrapmiddle{
+	float: left;
+	width: 100%;
+	height: 500px;
+	background-color: #fff
+}
+
+.middle{
+	margin-right:400px;
+	margin-left:183px;
+	padding-top: 31px;
+}
+
+.left{
+	float: left;
+	width: 185px;
+	margin-left: -100%;
+	padding-top: 31px;
+	height: 600px;
+}
+
+.right{
+  	float: left;
+   	width: 377px;
+	margin-left: -387px;
+	height: 492px;
+}
+
+.effect {
+	transform: translateX(400px); 
+	-moz-transform: translateY(400px);
+	-o-transform: translateY(400px);
+	-webkit-transform: translateX(400px);
+}
+
+.uneffect {
+	transform: translateX(-00px); 
+	-moz-transform: translateY(-400px);
+	-o-transform: translateY(-400px);
+	-webkit-transform: translateX(-400px);
+}
+
+.pingme {
+	right: 25px;
+	width: 110px;
+	bottom: 19px;
+	height: 45px;
+	background: url('../images/logo_pingme.png') center top no-repeat transparent;
+	background-size: contain;
+	-webkit-background-size: contain;
+	position: fixed;
+}
+
+.pingmeText {
+	right: 0%;
+	width: 135px;
+	text-align: center;
+	bottom: 6px;
+	height: 16px;
+	font-family: ClanOT-News;
+	position: fixed;
+	font-size: 11px;
+	color: #b7b8b9;
+}
+
+.chatForm {
+	text-align: center;
+	margin: 0;
+}
+
+.chatInput {
+	position: relative;
+  	width: 73%;
+  	float: left;
+}
+
+.bottom {
+	position: relative;
+	height: 4%;
+	width: 100%;
+}
+
+.participants {
+	display: inline-block;
+	left: 0;
+	top: 220px;
+	width: 162px;
+	height: 300px;
+	position: absolute;
+	margin-left: 0;
+}
+
+.data {
+	float: right;
+	margin-top: -3px;
+	margin-right: 10px;
+	width: 380px;
+	height: 450px;
+}
+
+.imButton {
+	position: relative;
+	float: right;
+	height: 28px;
+	width: 60px;
+	text-align: center;
+	font-family: ClanOT-News;
+	font-size: 12px;
+	line-height: 28px;
+	color: #ffffff;
+}
+
+.fileButton {
+	position: relative;
+	float: right;
+	height: 28px;
+	width: 60px;
+	text-align: center;
+	font-family: ClanOT-News;
+	font-size: 12px;
+	line-height: 28px;
+	color: #ffffff;
+	margin-right:4px;
+}
+
+.sendButton {
+	position: relative;
+	font-family: ClanOT-News;
+	font-size: 12px;
+	line-height: 32px;
+	background-color: #4b4f56;
+	color: #ffffff;
+	padding: 6px 24px 6px 24px;
+	margin-left: 7px;
+}
+
+.fileUploadButton {
+	margin: 2px 1px 1px 1px;
+	float: right;
+	font-family: ClanOT-News;
+	font-size: 12px;
+	line-height: 27px;
+	background-color: #4b4f56;
+	color: #ffffff;
+	padding: 0 15px 0 14px;
+}
+
+.dataList {
+	border: 1px solid #b7b8b9;
+	height: 96%;
+	margin-left: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.hiddenList {
+	display: none;
+}
+
+.selectedTab {
+	background-color: #4b4f56;
+}
+
+.unselectedTab {
+	background-color: #B6B7B8;
+}
+
+.touchButton {
+	cursor: pointer;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.fileUpload {
+	position: relative;
+	overflow: hidden;
+}
+.fileUpload input {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
