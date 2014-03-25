@@ -19,7 +19,7 @@ var options = {
 };
 
 var env = 'local';
-var port = 80;
+var port = 8881;
 
 var server = null,
 	serverHttps = null;
@@ -57,5 +57,5 @@ var router = require('./app/server/router')(wsServer, app);
 server.listen(port);
 
 if(env === 'local') {
-	serverHTTPS.listen(443);	
+	serverHTTPS.listen(8882);	
 }

@@ -34,7 +34,7 @@ module.exports = View.extend({
         };
     },
 
-    displayVideo: function() {
+    displayVideo: function(msg) {
     	media.displayParticipantVideo(this.$('.stage-video')[0], this.stage.id);
     },
 

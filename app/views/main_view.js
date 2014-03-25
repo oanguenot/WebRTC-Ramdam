@@ -5,7 +5,9 @@ var View     = require('./view'),
     Stage = require('./stage'),
     Local = require('./local'),
     IM = require('../models/im'),
+    Files = require('../models/files'),
     Message = require('../models/message'),
+    File = require('../models/file'),
     MessageUI = require('./message');
 
 var listOfParticipants = {};
@@ -20,6 +22,8 @@ var test_id = null;
 
 var im = new IM();
 
+var files = new Files();
+
 var full = false;
 
 module.exports = View.extend({
@@ -30,10 +34,11 @@ module.exports = View.extend({
 		'keyup #chatEditor': 'OnChat',
         'submit': "onSubmit",
         'change #fileselect' : 'onFileChange',
-        'click .desktopSharingButton': 'onStartDesktopSharing',
+        'click .desktopSharingButton': 'onSwitchFeature',
         'click .sendButton': 'OnSendMessage',
         'click .imButton': 'onIMButton',
-        'click .fileButton': 'onFileButton'
+        'click .fileButton': 'onFileButton',
+        'click .shareButton': 'onShareScreen'
 	},
 
 	subscriptions: {
@@ -42,8 +47,14 @@ module.exports = View.extend({
         'media:participantDisconnected': 'onRemoteVideoEnded',
         'media:participantMessage': 'onParticipantMessage',
         'media:onCallOffered': 'onCallOffered',
+        'media:onCallEnded': 'onCallEnded',
         'media:remoteVideoON': 'onRemoteVideoReceived',
+        'media:remoteScreenON': 'onRemoteScreenReceived',
+        'media:remoteScreenOFF': 'onRemoteScreenEnded',
+        //'media:remoteVideoOFF': 'onRemoteVideoEnded',
+        'media:onFileReceived': 'onPeerFileReceived',
         'media:localStreamStarted': 'onLocalMediaStarted',
+        'media:localScreenStreamStarted': 'onLocalScreenStarted',
         'participant:switch': 'onParticipantSwitch'
     },
 
@@ -51,6 +62,8 @@ module.exports = View.extend({
         this.listenTo(me.getConference(), 'change:title', this.onConferenceTitleChange);
 
         this.listenTo(im, 'add', this.onAddMessage);
+
+        this.listenTo(files, 'add', this.onAddFile);
 
         $(window).on("resize", this.onResize);
 	},
@@ -67,6 +80,111 @@ module.exports = View.extend({
 	getRenderData: function(){
     },
 
+    onAddFile: function(model) {
+        console.log("MODEL", model);
+    },
+
+    onPeerFileReceived: function(msg) {
+        console.log("DEMO :: RECEIVED:", msg);
+
+        navigator.webkitPersistentStorage.requestQuota(10*1024*1024, function(grantedBytes){
+
+            window.webkitRequestFileSystem(window.TEMPORARY, grantedBytes, function(fs) {
+    
+                fs.root.getFile(msg.data.info.fileName, {create: true}, function(fileEntry) {
+                    // Create a FileWriter object for our FileEntry (log.txt).
+                    fileEntry.createWriter(function(fileWriter) {
+
+                        fileWriter.seek(fileWriter.length); // Start write position at EOF.
+
+                        fileWriter.write(msg.data.content);
+
+                        //var link = document.createElement('a');
+                        //link.href = fileEntry.toURL();
+                        //link.target = '_blank';
+                        //link.download = msg.data.info.fileName;
+                        //link.innerHTML = msg.data.info.fileName;
+                        //document.body.appendChild(link);
+
+
+                        var nickname = me.nickname();
+
+                        var id = msg.caller.substring(1);
+
+                        if(!media.isMe(id)) {
+                            if(id in participantsCaps) {
+                                nickname = participantsCaps[id].nickname;
+                            }
+                        }
+
+                        var file = new File({
+                            time: new Date(),
+                            issuer: nickname,
+                            name: msg.data.info.fileName,
+                            size: msg.data.info.size
+                        });
+
+                        files.add(file);
+
+                    }, function(e) {
+                        console.log("DEMO :: Error1", e);
+                    });
+
+                }, function(ee) {
+                    console.log("DEMO :: Error2", ee);
+                });
+
+            }, function(eee){
+              console.log("DEMO :: Error3", eee);
+            });   
+        }, function(eeee) {
+            console.log("DEMO :: Error4", eeee)
+        });
+    },
+
+    onShareScreen: function() {
+        media.acquireScreen();
+    },
+
+    onLocalScreenStarted: function() {
+        for (var prop in participantsCaps) {
+            media.screenParticipant(prop);    
+        }
+    },
+
+    onRemoteScreenReceived: function(msg) {
+        console.log("Screen sharing received");
+
+        var id = 'screen' + msg.id;
+
+        if (participantOnStageID !== id && listOfParticipants[id] === undefined ) {
+            console.log(" stream not existing");
+
+        var associatedParticipantCaps = participantsCaps[msg.id];
+
+        var caps = {
+            nickname: associatedParticipantCaps.nickname + " (screen)"
+        };
+
+        this._addNewParticipantElement(id, caps.nickname);
+
+        msg.id = id;
+
+        this.onRemoteVideoReceived(msg);
+
+        }
+        else {
+            console.log("stream already exists");
+        }
+    },
+
+    onRemoteScreenEnded: function(msg) {
+
+        msg.id = 'screen' + msg.id;
+
+        this.onRemoteVideoEnded(msg);
+    },
+
     onResize: function() {
         this.$('#data').height(window.innerHeight - 120);
         this.$('#stage').height(window.innerHeight - 100);
@@ -77,6 +195,7 @@ module.exports = View.extend({
 
         //Store participants capabilities
         participantsCaps[id] = caps;
+
 
         // Display this participant
         this._addNewParticipantElement(id, caps.nickname);
@@ -90,7 +209,10 @@ module.exports = View.extend({
     	this._addNewParticipantElement(id, caps.nickname);
 
     	// Call this participant
-    	media.callParticipant(id, caps.mediaCaps.canShareData || false);
+    	media.callParticipant(id);
+
+        // Create a data Channel
+        media.dataParticipant(id);
     },
 
     onParticipantDisconnected: function(id) {
@@ -134,26 +256,34 @@ module.exports = View.extend({
     },
 
     onCallOffered: function(id) {
-    	media.answerParticipant(id, participantsCaps[id].mediaCaps.canShareData || false);
+    	media.answerParticipant(id);
     },
 
-    onRemoteVideoReceived: function(id) {
-        if(participantOnStageID === id) {
-    	    participantOnStage.displayVideo();
+    onCallEnded: function(msg) {
+
+        if(msg.media === 'screen') {
+            this.onRemoteScreenEnded(msg);
+        }
+
+    },
+
+    onRemoteVideoReceived: function(msg) {
+        if(participantOnStageID === msg.id) {
+    	    participantOnStage.displayVideo(msg);
         }
         else {
-            listOfParticipants[id].displayVideo();
+            listOfParticipants[msg.id].displayVideo(msg);
         }
     },
 
-    onRemoteVideoEnded: function(id) {
+    onRemoteVideoEnded: function(msg) {
 
         // Remove participant from the array of caps
-        participantsCaps[id] = null;
-        delete participantsCaps[id];
+        participantsCaps[msg.id] = null;
+        delete participantsCaps[msg.id];
 
         // first check if there is a participant on stage
-        if(participantOnStageID === id) {
+        if(participantOnStageID === msg.id) {
             participantOnStage.stopVideo();
 
             if(_.size(listOfParticipants) > 0) {
@@ -180,9 +310,9 @@ module.exports = View.extend({
             }
         }
         else {
-            listOfParticipants[id].dispose();
-            listOfParticipants[id] = null;
-            delete listOfParticipants[id];
+            listOfParticipants[msg.id].dispose();
+            listOfParticipants[msg.id] = null;
+            delete listOfParticipants[msg.id];
         }
     },
 
@@ -200,8 +330,7 @@ module.exports = View.extend({
         var caps = {
             nickname: me.nickname(),
             audio: me.hasAudio(),
-            video: me.hasVideo(),
-            mediaCaps: media.getCapabilities()
+            video: me.hasVideo()
         };
 
         media.connectToServer(caps, me.getConferenceCode());
@@ -276,29 +405,10 @@ module.exports = View.extend({
 
         var file = evt.target.files[0];
 
-        console.log("Send file", file);
-
-/*
-        var reader = new FileReader();
-
-        var that = this;
-
-        reader.onload = function(file) {
-
-            if(reader.readyState == FileReader.DONE) {
-                 that.sendBlob(new Blob([file.target.result]));
-            }
-        };
-
-        reader.readAsArrayBuffer(file);
-*/
         media.sendFile(file, test_id);
-
     },
 
-   
-
-    onStartDesktopSharing: function() {
+    onSwitchFeature: function() {
     
         if(!full) {
             this.$('#data').addClass('effect');
@@ -314,11 +424,6 @@ module.exports = View.extend({
         }
 
         full = !full;
-
-    //media.acquireScreen();
-       
-
-
     },
 
     onParticipantSwitch: function(id) {
@@ -341,7 +446,11 @@ module.exports = View.extend({
 
             listOfParticipants[stage.id] = view;
             view.switchParticipant(stage);
- c        }
+        }
+    },
+
+    onScreenSharing: function(id) {
+
     },
 
     onAddMessage: function(model) {

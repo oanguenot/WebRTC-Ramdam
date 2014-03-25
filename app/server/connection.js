@@ -79,12 +79,14 @@ var _startServer = function _startServer(wsServer) {
 
 		//connections.push({id: '', socket: connection});
 
-    	//console.log("New peer connected");
+    	console.log("New peer connected");
 
     	// This is the most important callback for us, we'll handle
     	// all messages from users here.
     	connection.on('message', function(evt) {
-        	
+
+    		console.log("OnMessage");
+
         	if (evt.type === 'utf8') {
 		
         		var msg = JSON.parse(evt.utf8Data);
@@ -93,7 +95,7 @@ var _startServer = function _startServer(wsServer) {
             	var room = msg.room;
             	var currentRoom = conferences[room];
 
-            	//console.log("RECEIVED from <" + caller + ">:" + evt.utf8Data);
+            	console.log("RECEIVED from <" + caller + ">:" + evt.utf8Data);
 
 	            if(msg.data.type === "join") {
 
@@ -101,12 +103,12 @@ var _startServer = function _startServer(wsServer) {
 	            	// Todo remove the connection from this temp array
 	            	//for (var i=0;i<connections.length;i++) {
 	            		//if(connections[i].socket === connection) {
-	            			conferences[room].connections.push({id: caller, socket: connection, caps: msg.data.caps});
+	            			conferences[room].connections.push({id: '' + caller, socket: connection, caps: msg.data.caps});
 	            			console.log("<"+ caller + "> has entered room <"+ room + ">");
 	            			//connections[i] = null;
 	            			//delete connections[i];
 	            			console.log("store in connected:" + room);
-	            			connected.push({socket: connection, room: room, id: caller});
+	            			connected.push({socket: connection, room: room, id: '' + caller});
 	            			//break;
 	            		//}
 	            	//}
@@ -115,13 +117,13 @@ var _startServer = function _startServer(wsServer) {
 	                for (var i=0;i<currentRoom.connections.length;i++) {
 	                    // Associate Socket <-> ID
 	                    if(currentRoom.connections[i].socket === connection) {
-	                        /*
+	                        
 	                        //console.log("old id:" + connections[i].id);
-	                        connections[i].id = caller;
+	                        //connections[i].id = caller;
 	                        //store capabilities
-	                        connections[i].caps = msg.data.caps;
+	                        //connections[i].caps = msg.data.caps;
 	                        console.log("<"+ caller + "> has been associated to a socket");
-	                        */
+	                        
 	                    }
 	                    // Send information about other peer connected
 	                    else {
@@ -147,8 +149,10 @@ var _startServer = function _startServer(wsServer) {
 	            } else {
 	            	// Send a message to only one peer
 	            	if(msg.callee !== "all") {
+	                    console.log("Should relay a msg to " + msg.callee);
 	                    for (var i = 0;i < currentRoom.connections.length; i++) {
-	                        //console.log("Connections:" + connections[i].id);
+
+	                        console.log("Connections:" + currentRoom.connections[i].id);
 	                        if(currentRoom.connections[i].id === msg.callee) {
 	                            console.log("Send message <" + msg.data.type + "> to <" + currentRoom.connections[i].id + "> in room <" + room + ">");
 	                            currentRoom.connections[i].socket.send(evt.utf8Data);
@@ -164,7 +168,7 @@ var _startServer = function _startServer(wsServer) {
 	                            currentRoom.connections[i].socket.send(evt.utf8Data);
 	                        }
 	                        else {
-	                        	if(msg.data.type === "chat") {
+	                        	if(msg.data.type === "im") {
 	                        		console.log("Send message <" + msg.data.type + "> back to <" + currentRoom.connections[i].id + "> (me) in room <" + room + ">");
 	                        		currentRoom.connections[i].socket.send(evt.utf8Data);
 	                        	}

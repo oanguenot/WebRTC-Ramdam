@@ -16,10 +16,14 @@ Sonotone.STUN = {
 
 var io = null;
 
-var sono = new Sonotone.IO(new Date().getTime());
+var sono = new Sonotone.IO(new Date().getTime().toString());
 
 sono.localMedia().on('onLocalVideoStreamStarted', function onLocalStreamStarted(stream) {
 	Backbone.Mediator.publish('media:localStreamStarted', stream, Sonotone.ID);
+}, this);
+
+sono.localMedia().on('onLocalScreenStreamStarted', function onLocalStreamStarted(stream) {
+	Backbone.Mediator.publish('media:localScreenStreamStarted', stream, Sonotone.ID);
 }, this);
 
 sono.localMedia().on('onLocalVideoStreamEnded', function onLocalStreamEnded() {
@@ -30,41 +34,54 @@ sono.localMedia().on('onLocalVideoStreamError', function onLocalStreamError() {
 
 }, this);
 
-sono.remoteMedia().on('onRemoteStreamStarted', function onRemoteStreamStarted(id) {
-	Backbone.Mediator.publish('media:remoteVideoON', id);
+sono.remoteMedia().on('onRemoteVideoStreamStarted', function onRemoteStreamStarted(msg) {
+	Backbone.Mediator.publish('media:remoteVideoON', msg);
 }, this);
 
-sono.remoteMedia().on('onRemoteStreamEnded', function onRemoteStreamEnded(id) {
-	Backbone.Mediator.publish('media:remoteVideoOFF', id);
+sono.remoteMedia().on('onRemoteScreenStreamStarted', function onRemoteStreamStarted(msg) {
+	Backbone.Mediator.publish('media:remoteScreenON', msg);
+}, this);
+
+sono.remoteMedia().on('onRemoteVideoStreamEnded', function onRemoteStreamEnded(msg) {
+	Backbone.Mediator.publish('media:remoteVideoOFF', msg);
+}, this);
+
+sono.remoteMedia().on('onRemoteScreenStreamEnded', function onRemoteStreamEnded(msg) {
+	Backbone.Mediator.publish('media:remoteScreenOFF', msg);
 }, this);
 
 sono.on('onPeerConnected', function onPeerConnected(data) {
+	console.log("Connivence :: New User:" + data.id, data);
 	Backbone.Mediator.publish('media:participantConnected', data.id, data.caps);
+}, this);
+
+sono.on('onPeerAlreadyConnected', function onPeerAlreadyConnected(data){
+	console.log("Connivence :: New User:" + data.id, data);
+	Backbone.Mediator.publish('media:participantAlreadyConnected', data.id, data.caps);
 }, this);
 
 sono.on('onPeerDisconnected', function onPeerDisconnected(id) {
 	Backbone.Mediator.publish('media:participantDisconnected', id);
 }, this);
 
-sono.on('onPeerChat', function onPeerChat(data) {
+sono.on('onPeerIMMessage', function onPeerChat(data) {
 	Backbone.Mediator.publish('media:participantMessage', data.id, data.content);
 }, this);
 
-sono.on('onPeerAlreadyConnected', function onPeerAlreadyConnected(data){
-	Backbone.Mediator.publish('media:participantAlreadyConnected', data.id, data.caps);
-}, this);
-
-sono.on('onCallOffered', function onCallOffered(id){
-	Backbone.Mediator.publish('media:onCallOffered', id);
+sono.on('onCallOffered', function onCallOffered(msg){
+	Backbone.Mediator.publish('media:onCallOffered', msg.id);
 }, this);
 
 sono.on('onCallAnswered', function onCallAnswered(id){
 	Backbone.Mediator.publish('media:onCallAnswered', id);
 }, this);
 
-sono.on('onFileReceived', function onFileReceived(data) {
-	console.log("media");
-	Backbone.Mediator.publish('media:onFileReceived', data.id, data.content);
+sono.on('onCallEnded', function onCallEnded(msg) {
+	Backbone.Mediator.publish('media:onCallEnded', msg);
+}, this);
+
+sono.on('onPeerFileReceived', function onFileReceived(msg) {
+	Backbone.Mediator.publish('media:onFileReceived', msg);
 }, this);
 
 module.exports = {
@@ -73,7 +90,7 @@ module.exports = {
 		var constraints = {
             audio: withAudio,
             video: withVideo,
-            format: 'qvga'
+            format: 'vga'
         };
 
         sono.localMedia().acquire(constraints);
@@ -89,7 +106,9 @@ module.exports = {
 
 	connectToServer: function(caps, room) {
 
-		sono.transport('websocket', {host: window.location.hostname, port: null});
+		//sono.transport('websocket', {host: window.location.hostname, port: null});
+		sono.transport('websocket', {host: '192.168.0.126', port: '8881'});
+
 
 		sono.transport().on('onReady', function onReady() {
 
@@ -106,20 +125,35 @@ module.exports = {
 		sono.transport().connect(caps, room);
 	},
 
-	callParticipant: function(id, hasRemoteDataChannel) {
-		sono.call(id, hasRemoteDataChannel);
+	callParticipant: function(id) {
+		sono.call(id, 'video', false);  
 	},
 
-	answerParticipant: function(id, hasRemoteDataChannel) {
-		sono.answer(id, hasRemoteDataChannel);
+	screenParticipant: function(id) {
+		sono.call(id, 'screen', false);
+	},
+
+	dataParticipant: function(id) {
+		sono.call(id, 'data', false);
+	},
+
+	answerParticipant: function(id) {
+		sono.answer(id, false);  
 	},
 
 	displayParticipantVideo: function(HTMLElement, id) {
-		sono.remoteMedia().renderStream(HTMLElement, id);
+		
+		if(id.indexOf('screen') > -1) {
+			id = id.substring(6);
+			sono.remoteMedia().renderStream(HTMLElement, id, 'screen');		
+		}
+		else {
+			sono.remoteMedia().renderStream(HTMLElement, id, 'video');	
+		}
 	},
 
 	sendMessage: function(message) {
-		sono.sendChatMessage(message);
+		sono.sendIMMessage(message);
 	},
 
 	sendData: function(msg, callee) {
@@ -131,7 +165,7 @@ module.exports = {
 	},
 
 	getCapabilities: function() {
-		return sono.capabilities();
+		return sono.caps();
 	},
 
 	isMe: function(id) {
