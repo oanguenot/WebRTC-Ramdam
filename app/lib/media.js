@@ -107,8 +107,10 @@ module.exports = {
 	connectToServer: function(caps, room) {
 
 		//sono.transport('websocket', {host: window.location.hostname, port: null});
-		sono.transport('websocket', {host: '192.168.0.126', port: '8881'});
-
+		//sono.transport('websocket', {host: '192.168.0.126', port: '8881'});
+		//sono.transport('websocket', {host: '172.26.134.23', port: '8881'});            
+		sono.transport('websocket', {host: '172.26.165.198', port: '8881'});            
+		sono.transport('websocket', {host: '10.0.6.169', port: '8881'});            
 
 		sono.transport().on('onReady', function onReady() {
 

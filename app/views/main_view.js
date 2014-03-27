@@ -8,7 +8,8 @@ var View     = require('./view'),
     Files = require('../models/files'),
     Message = require('../models/message'),
     File = require('../models/file'),
-    MessageUI = require('./message');
+    MessageUI = require('./message'),
+    FileUI = require('./file');
 
 var listOfParticipants = {};
 
@@ -81,7 +82,10 @@ module.exports = View.extend({
     },
 
     onAddFile: function(model) {
-        console.log("MODEL", model);
+        var ui = new FileUI({model: model }).render();
+
+        //this.$('#fileList').prepend(ui.el);
+        this.$('#dataList').prepend(ui.el);
     },
 
     onPeerFileReceived: function(msg) {
@@ -121,7 +125,8 @@ module.exports = View.extend({
                             time: new Date(),
                             issuer: nickname,
                             name: msg.data.info.fileName,
-                            size: msg.data.info.size
+                            size: msg.data.info.size,
+                            url: fileEntry.toURL()
                         });
 
                         files.add(file);

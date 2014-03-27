@@ -1,6 +1,6 @@
-<div class="wrapper">
+<div class="wrapper unselectable">
 	<div class="header">
-		<span class="appName">Ting</span>
+		<span class="appName">Twing</span>
 		<span class="title">Conference</span>
 		<span class="desktopSharingButton touchButton unselectedTab">&gt;</span>
 	</div>
@@ -20,12 +20,12 @@
 	</div>
 
 	<div id="data" class="right">
-		<span id="imButton" class="imButton touchButton selectedTab">IM</span>
-		<span id="fileButton" class="fileButton touchButton unselectedTab">FILES</span>
+		<div class="fileUploadButton fileUpload touchButton">
+    		<span>SHARE A FILE</span>
+    		<input type="file" class="upload" id="fileselect" />
+		</div>
 		<div class="clear"></div>
 		<ul id="dataList" class="dataList">
-		</ul>
-		<ul id="fileList" class="dataList hiddenList">
 		</ul>
 		<div id="bottom" class="bottom">
 			<form class="chatForm">
@@ -33,11 +33,6 @@
 				<span id="sendButton" class="sendButton touchButton">SEND</span>
 				<button class="btn btn-block btn-info" type="action" id="joinButton" disabled style="display:none">Join</button>
 			</form>
-
-			<div class="fileUpload fileUploadButton touchButton hiddenList">
-	    		<span>SHARE</span>
-	    		<input type="file" class="upload" id="fileselect" />
-			</div>
 		</div>
 	</div>
 </div>

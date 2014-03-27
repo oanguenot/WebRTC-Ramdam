@@ -4,7 +4,8 @@ module.exports = Backbone.Model.extend({
         time: new Date(),
         issuer: '',
         name: '',
-        size: ''
+        size: '',
+        url: ''
     },
 
     initialize: function(){
