@@ -1,6 +1,8 @@
 Sonotone.debug = true;
 Sonotone.enableSTUN = true;
 
+var chromeExtension = false;
+
 /*
 Sonotone.STUN = {
     iceServers: [
@@ -18,6 +20,42 @@ var io = null;
 
 var sono = new Sonotone.IO(new Date().getTime().toString());
 
+//var editorExtensionId = "meccllpfhfmamingegojnnbpglmehhdf";
+var editorExtensionId = 'oogjpemgamiahbhfflabaejkcajfnaak';
+
+var port = null;
+
+if(chrome.runtime) {
+	console.log("Try to connect to the Chrome Extension...");
+	port = chrome.runtime.connect(editorExtensionId);
+
+	if (port) {
+		console.log("Port created successfully...")
+		port.onMessage.addListener(function(msg) {
+	        console.log("answered", msg);
+
+	        switch (msg.type) {
+	        	case 'loginResponse':
+	        		chromeExtension = true;
+	        		console.log("Chrome Extension found and ready!");
+	        		break;
+	        	case 'startsharingResponse':
+	        		if(msg.code === 0 && msg.streamID) {
+	        			sono.localMedia().acquireScreen(null, msg.streamID);
+	        		}
+	        		//else {
+	        		//	sono.localMedia().acquireScreen();	
+	        		//}
+	        		break;
+	        	case 'endsharingResponse':
+	        		break;
+	        }
+	  	});
+
+	  	port.postMessage({type: 'login', data: null});
+	};	
+}
+
 sono.localMedia().on('onLocalVideoStreamStarted', function onLocalStreamStarted(stream) {
 	Backbone.Mediator.publish('media:localStreamStarted', stream, Sonotone.ID);
 }, this);
@@ -32,6 +70,10 @@ sono.localMedia().on('onLocalVideoStreamEnded', function onLocalStreamEnded() {
 
 sono.localMedia().on('onLocalVideoStreamError', function onLocalStreamError() {
 
+}, this);
+
+sono.localMedia().on('onLocalScreenStreamError', function onLocalStreamError() {
+	Backbone.Mediator.publish('media:localScreenStreamError');
 }, this);
 
 sono.remoteMedia().on('onRemoteVideoStreamStarted', function onRemoteStreamStarted(msg) {
@@ -97,7 +139,12 @@ module.exports = {
 	},
 
 	acquireScreen: function() {
-		sono.localMedia().acquireScreen();
+		if(chromeExtension) {
+			port.postMessage({type: 'startsharing'});
+		}
+		else {
+			sono.localMedia().acquireScreen();
+		}
 	},
 
 	renderLocalStream: function(HTMLElement) {
@@ -107,10 +154,10 @@ module.exports = {
 	connectToServer: function(caps, room) {
 
 		//sono.transport('websocket', {host: window.location.hostname, port: null});
-		//sono.transport('websocket', {host: '192.168.0.126', port: '8881'});
+		sono.transport('websocket', {host: '192.168.0.126', port: '8881'});
 		//sono.transport('websocket', {host: '172.26.134.23', port: '8881'});            
-		sono.transport('websocket', {host: '172.26.165.198', port: '8881'});            
-		sono.transport('websocket', {host: '10.0.6.169', port: '8881'});            
+		//sono.transport('websocket', {host: '172.26.165.198', port: '8881'});            
+		//sono.transport('websocket', {host: '10.0.6.169', port: '8881'});            
 
 		sono.transport().on('onReady', function onReady() {
 
@@ -121,7 +168,7 @@ module.exports = {
 		}, this);
 
 		sono.transport().on('onError', function onError() {
-
+			Backbone.Mediator.publish('media:onTransportError');
 		}, this)
 
 		sono.transport().connect(caps, room);

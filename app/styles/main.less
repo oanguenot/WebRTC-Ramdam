@@ -35,22 +35,25 @@ header {
 	}
 }
 
-body {
-	overflow: hidden;
+
+
+.fontPingme {
+	font-family: ClanOT-News;
 }
 
- .unselectable {
+.unselectable {
     -moz-user-select:none;
     -webkit-user-select:none;
 }
 
 .title {
-	color: #ffffff;
+		color: #ffffff;
 	line-height: 45px;
 	text-align: left;
 	font-size: 18px;
-	font-family: ClanOT-News;
+	font-family: 'Roboto', 'sans-serif';
 	padding-left: 6px;
+	font-weight: 100;
 }
 
 .desktopSharingButton {
@@ -59,7 +62,6 @@ body {
 	height: 28px;
 	width: 28px;
 	text-align: center;
-	font-family: ClanOT-News;
 	font-size: 16px;
 	line-height: 28px;
 	border-radius: 14px;
@@ -72,24 +74,28 @@ body {
  	float: left;
    	width: 100%;
 	height: 45px;
-	background-color: #4b4f56;
+	background-color: #3B3D41;
 	text-align: left;
 	margin-bottom: 10px;
-	border-bottom: rgb(209, 209, 70) 6px solid;
+	/*border-bottom: rgb(209, 209, 70) 6px solid; */
 }
 
 .no-participant {
-	margin-right: 400px;
+	margin-right: 350px;
 	margin-left: 183px;
-	margin-top: 32px;
+	margin-top: 2px;
 	padding-top: 100px;
 	margin-bottom: 100px;
 	background-color: #4b4f56;
 	text-align: center;
 	line-height: 90px;
 	color: #ffffff;
-	font-family: ClanOT-News;
 	font-size: 12px;
+	font-weight: 300;
+}
+
+.no-participantPingme {
+	margin-right: 10px;
 }
 
 .wrapper{
@@ -101,28 +107,36 @@ body {
 	float: left;
 	width: 100%;
 	height: 500px;
-	background-color: #fff
 }
 
 .middle{
-	margin-right:400px;
+	margin-right:350px;
 	margin-left:183px;
-	padding-top: 31px;
+	margin-top: 2px;
+}
+
+.middlePingme {
+	margin-right:10px;
 }
 
 .left{
 	float: left;
 	width: 185px;
 	margin-left: -100%;
-	padding-top: 32px;
+	padding-top: 2px;
 	height: 600px;
 }
 
 .right{
   	float: left;
-   	width: 377px;
-	margin-left: -387px;
+   	width: 327px;
+	margin-left: -337px;
 	height: 492px;
+}
+
+.rightPingme {
+   	width: 0;
+	margin-left: 0;
 }
 
 .effect {
@@ -169,8 +183,11 @@ body {
 
 .chatInput {
 	position: relative;
-  	width: 73%;
+  	width: 226px;
   	float: left;
+  	font-weight: 100;
+  	font-family: 'Roboto', 'sans-serif';
+  	font-size: 12px !important;
 }
 
 .bottom {
@@ -190,12 +207,12 @@ body {
 }
 
 .appName {
-	color: rgb(209, 209, 70);
+	color: #89939C;
 	line-height: 45px;
 	text-align: center;
-	font-size: 12px;
-	font-family: ClanOT-News;
+	font-size: 14px;
 	font-style: italic;
+	font-weight: 900;
 	padding-left: 10px;
 }
 
@@ -209,16 +226,16 @@ body {
 
 .shareButton {
 	position: relative;
-	float: left;
+	float: right;
 	height: 28px;
 	width: 124px;
 	text-align: center;
-	font-family: ClanOT-News;
 	font-size: 12px;
 	line-height: 28px;
-	margin-left: 10px;
+	margin-right: 8px;
+	font-weight: 100;
 	color: #ffffff;
-	margin-top: -3px;
+	margin-top: 8px;
 }
 
 .imButton {
@@ -227,7 +244,7 @@ body {
 	height: 28px;
 	width: 60px;
 	text-align: center;
-	font-family: ClanOT-News;
+	font-weight: 100;
 	font-size: 12px;
 	line-height: 28px;
 	color: #ffffff;
@@ -240,9 +257,9 @@ body {
 	height: 28px;
 	width: 60px;
 	text-align: center;
-	font-family: ClanOT-News;
 	font-size: 12px;
 	line-height: 28px;
+	font-weight: 100;
 	color: #ffffff;
 	margin-right:4px;
 	margin-top:-3px;
@@ -250,10 +267,10 @@ body {
 
 .sendButton {
 	position: relative;
-	font-family: ClanOT-News;
 	font-size: 12px;
 	line-height: 32px;
 	background-color: #4b4f56;
+	font-weight: 100;
 	color: #ffffff;
 	padding: 6px 24px 6px 24px;
 	margin-left: 7px;
@@ -262,25 +279,30 @@ body {
 .fileUploadButton {
 	margin-top: -4px;
 float: right;
-font-family: ClanOT-News;
 font-size: 12px;
 line-height: 28px;
-background-color: #4b4f56;
+background-color: #A0A1A3;
+font-weight: 100;
 color: #ffffff;
 padding: 0 15px 0 14px;
 }
 
 .dataList {
 	border: 1px solid #b7b8b9;
-	height: 96%;
+	height: ~"calc(100% - 35px)";
 	margin-left: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	margin-top: 3px;
+	margin-top: 2px;
 }
 
-.hiddenList {
+.hidden {
 	display: none;
+}
+
+#ramdam-actions {
+	display: inline-block;
+	float: right;
 }
 
 .selectedTab {
@@ -308,13 +330,18 @@ padding: 0 15px 0 14px;
 .fileUpload {
 	position: relative;
 	overflow: hidden;
+	position: relative;
+	margin-top: 8px;
+	margin-right: 8px;
 }
+
 .fileUpload input {
 	position: absolute;
 	top: 0;
 	right: 0;
 	margin: 0;
 	padding: 0;
+	font-weight: 100;
 	font-size: 20px;
 	cursor: pointer;
 	opacity: 0;

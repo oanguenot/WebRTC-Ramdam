@@ -1,18 +1,23 @@
 <div class="wrapper unselectable">
 	<div class="header">
-		<span class="appName">Twing</span>
+		<span class="appName">PingMe</span>
 		<span class="title">Conference</span>
-		<span class="desktopSharingButton touchButton unselectedTab">&gt;</span>
+		<!-- <span class="desktopSharingButton touchButton unselectedTab">&gt;</span> -->
+
+		<div id='ramdam-actions'>
+			<span id="shareButton" class="shareButton touchButton shareTab">SHARE MY SCREEN</span>
+			<div class="fileUploadButton fileUpload touchButton">
+	    		<span>SHARE A FILE</span>
+	    		<input type="file" class="upload" id="fileselect" />
+			</div>
+		</div>
 	</div>
 
 	<div id="wrapmiddle" class="wrapmiddle">
-		<span id="shareButton" class="shareButton touchButton shareTab">SHARE MY SCREEN</span>
 		<div id='no-participant' class="no-participant">Waiting for participant to connect...</div>
 		<div id="stage" class="middle">
 		</div>
 	</div>
-
-
 
 	<div class="left">
 		<span id="me" class="participant"></span>
@@ -20,10 +25,6 @@
 	</div>
 
 	<div id="data" class="right">
-		<div class="fileUploadButton fileUpload touchButton">
-    		<span>SHARE A FILE</span>
-    		<input type="file" class="upload" id="fileselect" />
-		</div>
 		<div class="clear"></div>
 		<ul id="dataList" class="dataList">
 		</ul>

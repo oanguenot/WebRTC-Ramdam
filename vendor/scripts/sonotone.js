@@ -2,7 +2,7 @@
 
 sonotone.js - v0.4.8
 WebRTC library for building WebRTC application
-Build date 2014-03-25
+Build date 2014-04-27
 Copyright (c) 2013, Olivier Anguenot
 
 Permission is hereby granted, free of charge, to any person
@@ -51,7 +51,7 @@ if (typeof exports !== 'undefined') {
  * @api public
  */
 
-Sonotone.VERSION = '0.4.8';
+Sonotone.VERSION = '0.4.9';
 
 /**
  * ID
@@ -532,6 +532,11 @@ IO.prototype = {
                 break;
 
         }
+
+        if(this._transport.type() === 'sip'){
+            this._transport.setPeer(peer.peer());
+        } 
+
         peer.createOffer(media, withDataChannel, null);
     },
 
@@ -1430,7 +1435,7 @@ LocalMedia.prototype = {
      * @api public
      */
 
-    acquireScreen: function(constraints) {
+    acquireScreen: function(constraints, id) {
 
         // Screen sharing seems to work only using HTTPS
         if(this._caps.canDoScreenSharing && this._caps.startedWithHTTPS) {
@@ -1448,14 +1453,31 @@ LocalMedia.prototype = {
                 }
             }
 
-            var video_constraints = {
-                mandatory: { 
-                    chromeMediaSource: 'screen',
-                    maxWidth: maxWidth,
-                    maxHeight: maxHeight
-                },
-                optional: []
-            };
+            var video_constraints = null;
+
+            if(id) {
+                video_constraints = {
+                    mandatory: { 
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: id,
+
+                        maxWidth: maxWidth,
+                        maxHeight: maxHeight
+                    },
+                    optional: []
+                };
+            }
+            else {
+                video_constraints = {
+                    mandatory: { 
+                        chromeMediaSource: 'screen',
+
+                        maxWidth: maxWidth,
+                        maxHeight: maxHeight
+                    },
+                    optional: []
+                };
+            }
 
             Sonotone.log("LOCALMEDIA", "Ask for screen media", video_constraints);
 
@@ -2203,6 +2225,8 @@ var SIPTransport = Sonotone.IO.SIPTransport = function() {
     this._call = null;
 
     this._callbacks = new Sonotone.IO.Events();
+
+    this._peer = null;
 };
 
 /**
@@ -2292,8 +2316,22 @@ SIPTransport.prototype = {
 
     send: function(JSONMessage) {
         console.log("SEND SIP", JSONMessage);
-    }
 
+        console.log("PEER", this._peer);
+
+        if(JSONMessage.data.type === 'offer') {
+            this._softPhone.call(JSONMessage.callee, {
+                'extraHeaders': [ 'X-Foo: foo', 'X-Bar: bar'],
+                'RTCConstraints': {"optional" : [{'DtlsSrtpKeyAgreement': true}]},
+                'mediaConstraints': {'audio': true, 'video': false}
+            }, JSONMessage.data.sdp, this._peer);
+        }
+
+    },
+
+    setPeer: function(peer) {
+        this._peer = peer;
+    }
 
 };/**
  * PeerConnection namespace.

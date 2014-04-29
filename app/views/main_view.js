@@ -56,7 +56,9 @@ module.exports = View.extend({
         'media:onFileReceived': 'onPeerFileReceived',
         'media:localStreamStarted': 'onLocalMediaStarted',
         'media:localScreenStreamStarted': 'onLocalScreenStarted',
-        'participant:switch': 'onParticipantSwitch'
+        'participant:switch': 'onParticipantSwitch',
+        'media:onTransportError': 'onTransportError',
+        'media:localScreenStreamError': 'onLocalScreenStreamError'
     },
 
 	initialize: function() {
@@ -73,12 +75,43 @@ module.exports = View.extend({
         media.acquireCamera(me.hasAudio(), me.hasVideo());
         this.updateConferenceTitle();
 
-        this.$('#data').height(window.innerHeight - 120);
-        this.$('#stage').height(window.innerHeight - 100);
-        this.$('#no-participant').height(window.innerHeight - 213);
+        var maxHeight = window.innerHeight - 75;
+        var maxHeightEmpty = window.innerHeight - 169;
+
+        if(me.getMode() === 'pingme') {
+            this.$('#ramdam-actions').addClass('hidden');   
+            this.$('.middle').addClass('middlePingme');
+            this.$('.right').addClass('rightPingme');
+            this.$('.no-participant').addClass('no-participantPingme'); 
+        }
+        else {
+            this.$('.appName').text('Ramdam');
+        }
+
+        this.$('#data').height(window.innerHeight - 75);
+        this.$('#stage').height(window.innerHeight - 75);
+        this.$('#wrapmiddle').height(window.innerHeight - 75);
+        this.$('#stage').css({'max-height': maxHeight + 'px'});
+        this.$('.stage-video').css({'max-height': maxHeight + 'px'});
+        this.$('#no-participant').height(window.innerHeight - 169);
+        this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
 	},
 
 	getRenderData: function(){
+    },
+
+    onTransportError: function() {
+        alert('Oups! There is an error contacting the server. The application will not work!');
+    },
+
+    onLocalScreenStreamError: function() {
+        if (window.location.protocol != "https:") {
+            alert('Oups! HTTPS protocol should be used in order to share your screen');
+        }
+        else {
+            alert('Oups! GetUserMedia flag should be set to activated in chrome://flags');    
+        }
+        
     },
 
     onAddFile: function(model) {
@@ -89,7 +122,6 @@ module.exports = View.extend({
     },
 
     onPeerFileReceived: function(msg) {
-        console.log("DEMO :: RECEIVED:", msg);
 
         navigator.webkitPersistentStorage.requestQuota(10*1024*1024, function(grantedBytes){
 
@@ -158,7 +190,6 @@ module.exports = View.extend({
     },
 
     onRemoteScreenReceived: function(msg) {
-        console.log("Screen sharing received");
 
         var id = 'screen' + msg.id;
 
@@ -191,9 +222,17 @@ module.exports = View.extend({
     },
 
     onResize: function() {
-        this.$('#data').height(window.innerHeight - 120);
-        this.$('#stage').height(window.innerHeight - 100);
-        this.$('#no-participant').height(window.innerHeight - 213);
+
+        var maxHeight = window.innerHeight - 75;
+        var maxHeightEmpty = window.innerHeight - 169; 
+
+        this.$('#data').height(window.innerHeight - 75);
+        this.$('#stage').height(window.innerHeight - 75);
+        this.$('#stage').css({'max-height': maxHeight + 'px'});
+        this.$('#wrapmiddle').height(window.innerHeight - 75);
+        this.$('.stage-video').css({'max-height': maxHeight + 'px'});
+        this.$('#no-participant').height(window.innerHeight - 169);
+        this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
     },
 
     onParticipantConnected: function(id, caps) {
@@ -250,7 +289,13 @@ module.exports = View.extend({
 
             this.$('#stage').append(participantOnStage.el);
 
+            //this.$('.stage-video').width(window.innerWidth - 600);
+
             participantOnStageID = id;
+
+            var maxHeight = window.innerHeight - 75;
+            this.$('#stage').css({'max-height': maxHeight + 'px'});
+            this.$('.stage-video').css({'max-height': maxHeight + 'px'});
         }
         else {
 
@@ -342,7 +387,7 @@ module.exports = View.extend({
     },
 
     onConferenceTitleChange: function(data) {
-        if(me.getMode() === "connivence") {
+        if(me.getMode() !== "pingme") {
             this.$('.title').text(me.getConferenceTitle() + ' (' + me.getConferenceCode() + ')');
         }
         else {
@@ -351,7 +396,7 @@ module.exports = View.extend({
     },
 
     updateConferenceTitle: function() {
-        if(me.getMode() === "connivence") {
+        if(me.getMode() !== "pingme") {
             this.$('.title').text(me.getConferenceTitle() + ' (' + me.getConferenceCode() + ')');
         }
         else {
@@ -410,7 +455,40 @@ module.exports = View.extend({
 
         var file = evt.target.files[0];
 
-        media.sendFile(file, test_id);
+        for (var prop in participantsCaps) {
+            media.sendFile(file, prop);
+        }
+
+        navigator.webkitPersistentStorage.requestQuota(10*1024*1024, function(grantedBytes){
+
+            window.webkitRequestFileSystem(window.TEMPORARY, grantedBytes, function(fs) {
+    
+                fs.root.getFile(file.name, {create: true}, function(fileEntry) {
+                    // Create a FileWriter object for our FileEntry (log.txt).
+                    fileEntry.createWriter(function(fileWriter) {
+
+                        fileWriter.seek(fileWriter.length); // Start write position at EOF.
+
+                        fileWriter.write(file);
+
+                        var f = new File({
+                            time: new Date(),
+                            issuer: me.nickname(),
+                            name: file.name,
+                            size: file.size,
+                            url: fileEntry.toURL()
+                        });
+
+                        files.add(f);
+
+                    });
+                });
+            }, function(err) {
+                console.log("ERR", err);
+            });
+        }, function(err) {
+            console.log("ERR2", err);
+        });
     },
 
     onSwitchFeature: function() {
