@@ -47,13 +47,14 @@ header {
 }
 
 .title {
-		color: #ffffff;
+	color: #ffffff;
 	line-height: 45px;
-	text-align: left;
+	text-align: center;
 	font-size: 18px;
 	font-family: 'Roboto', 'sans-serif';
-	padding-left: 6px;
+	width: ~"calc(100% - 540px)";
 	font-weight: 100;
+	display: inline-block;
 }
 
 .desktopSharingButton {
@@ -80,18 +81,35 @@ header {
 	/*border-bottom: rgb(209, 209, 70) 6px solid; */
 }
 
+.header-full {
+	height: 0;
+}
+
+.fullscreen {
+	float: right;
+/* margin-top: 8px; */
+	margin-right: 10px;
+}
+
 .no-participant {
 	margin-right: 350px;
 	margin-left: 183px;
 	margin-top: 2px;
 	padding-top: 100px;
 	margin-bottom: 100px;
-	background-color: #4b4f56;
 	text-align: center;
 	line-height: 90px;
 	color: #ffffff;
 	font-size: 12px;
 	font-weight: 300;
+	border: 1px solid #b7b8b9;
+}
+
+.no-participant-full {
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-top: 10px;
 }
 
 .no-participantPingme {
@@ -115,16 +133,24 @@ header {
 	margin-top: 2px;
 }
 
+.middle-full {
+	margin-right: 10px;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
 .middlePingme {
 	margin-right:10px;
 }
 
 .left{
-	float: left;
-	width: 185px;
-	margin-left: -100%;
+	position: absolute;
+	width: 180px;
 	padding-top: 2px;
 	height: 600px;
+	left: 0;
+	top: 54px;
 }
 
 .right{
@@ -199,7 +225,7 @@ header {
 .participants {
 	display: inline-block;
 	left: 0;
-	top: 220px;
+	top: 170px;
 	width: 162px;
 	height: 300px;
 	position: absolute;
@@ -228,14 +254,48 @@ header {
 	position: relative;
 	float: right;
 	height: 28px;
-	width: 124px;
 	text-align: center;
-	font-size: 12px;
+	font-size: 11px;
 	line-height: 28px;
-	margin-right: 8px;
+	/* margin-right: 24px; */
 	font-weight: 100;
 	color: #ffffff;
-	margin-top: 8px;
+	/* margin-top: 8px; */
+	padding: 0 10px 0 10px;
+	margin-left: 10px;
+}
+
+.exitFullScreen {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	height: 28px;
+	width: 60px;
+	text-align: center;
+	font-size: 11px;
+	line-height: 28px;
+	font-weight: 100;
+	color: #ffffff;
+	padding: 0 10px 0 10px;
+	background-color: black;
+}
+
+.inviteButton {
+	position: relative;
+	/* display: block; */
+	/* height: 28px; */
+	float: right;
+	text-align: center;
+	font-size: 11px;
+	line-height: 28px;
+	font-weight: 100;
+	color: #ffffff;
+	margin-right: 36px;
+	margin-left: 36px;
+	/* margin-top: -8px; */
+	background-color: black;
+	/* border-radius: 16px; */
+	padding: 0 10px 0 10px;
 }
 
 .imButton {
@@ -251,20 +311,6 @@ header {
 	margin-top: -3px;
 }
 
-.fileButton {
-	position: relative;
-	float: right;
-	height: 28px;
-	width: 60px;
-	text-align: center;
-	font-size: 12px;
-	line-height: 28px;
-	font-weight: 100;
-	color: #ffffff;
-	margin-right:4px;
-	margin-top:-3px;
-}
-
 .sendButton {
 	position: relative;
 	font-size: 12px;
@@ -277,14 +323,14 @@ header {
 }
 
 .fileUploadButton {
-	margin-top: -4px;
-float: right;
-font-size: 12px;
-line-height: 28px;
-background-color: #A0A1A3;
-font-weight: 100;
-color: #ffffff;
-padding: 0 15px 0 14px;
+	/* margin-top: -4px; */
+	float: right;
+	font-size: 11px;
+	line-height: 28px;
+	background-color: #A0A1A3;
+	font-weight: 100;
+	color: #ffffff;
+	padding: 0 10px 0 10px;
 }
 
 .dataList {
@@ -303,6 +349,7 @@ padding: 0 15px 0 14px;
 #ramdam-actions {
 	display: inline-block;
 	float: right;
+	margin-top: 8px; //sdsdf
 }
 
 .selectedTab {
@@ -317,6 +364,10 @@ padding: 0 15px 0 14px;
 	background-color: #3F76AD;
 }
 
+.touch {
+	cursor: pointer;
+}
+
 .touchButton {
 	cursor: pointer;
 	-webkit-touch-callout: none;
@@ -328,11 +379,10 @@ padding: 0 15px 0 14px;
 }
 
 .fileUpload {
-	position: relative;
-	overflow: hidden;
-	position: relative;
-	margin-top: 8px;
-	margin-right: 8px;
+overflow: hidden;
+position: relative;
+margin-top: 0;
+margin-right: 0;
 }
 
 .fileUpload input {

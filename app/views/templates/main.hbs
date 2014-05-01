@@ -1,15 +1,18 @@
 <div class="wrapper unselectable">
-	<div class="header">
+	<div id='header' class="header">
 		<span class="appName">PingMe</span>
 		<span class="title">Conference</span>
-		<!-- <span class="desktopSharingButton touchButton unselectedTab">&gt;</span> -->
 
 		<div id='ramdam-actions'>
+			<img id="fullButton" alt='tooltip' title='Click to change the view mode' src='./images/fullscreen.png' width='36' height='36' class='fullscreen touch' />
+			<span id="inviteButton" class="inviteButton touchButton"> + INVITE</span>		
 			<span id="shareButton" class="shareButton touchButton shareTab">SHARE MY SCREEN</span>
+			
 			<div class="fileUploadButton fileUpload touchButton">
 	    		<span>SHARE A FILE</span>
 	    		<input type="file" class="upload" id="fileselect" />
 			</div>
+
 		</div>
 	</div>
 
@@ -21,6 +24,7 @@
 
 	<div class="left">
 		<span id="me" class="participant"></span>
+		
 		<ul id="participants" class="participants"></ul>
 	</div>
 
@@ -36,13 +40,6 @@
 			</form>
 		</div>
 	</div>
-</div>
 
-<!--
-<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
-<button class="btn btn-block btn-info" type="action" id="testButton">SEND</button>
- -->
-<!--
-<div class="pingme"></div>
-<div class="pingmeText">Video Web Conference</div>
--->
+	<div id="exitFullScreen" class="exitFullScreen touchButton hidden">Exit</div>
+</div>

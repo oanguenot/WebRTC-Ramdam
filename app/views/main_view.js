@@ -27,6 +27,8 @@ var files = new Files();
 
 var full = false;
 
+var isFullScreen = false;
+
 module.exports = View.extend({
 	id: 'main-view',
 	template: require('./templates/main'),
@@ -39,7 +41,10 @@ module.exports = View.extend({
         'click .sendButton': 'OnSendMessage',
         'click .imButton': 'onIMButton',
         'click .fileButton': 'onFileButton',
-        'click .shareButton': 'onShareScreen'
+        'click #shareButton': 'onShareScreen',
+        'click .inviteButton': 'onInvite',
+        'click #fullButton': 'onFullScreen',
+        'click #exitFullScreen': 'onFullScreen'
 	},
 
 	subscriptions: {
@@ -85,19 +90,59 @@ module.exports = View.extend({
             this.$('.no-participant').addClass('no-participantPingme'); 
         }
         else {
-            this.$('.appName').text('Ramdam');
+            //this.$('.appName').text('Ramdam');
         }
 
-        this.$('#data').height(window.innerHeight - 75);
-        this.$('#stage').height(window.innerHeight - 75);
-        this.$('#wrapmiddle').height(window.innerHeight - 75);
+        this.$('#data').height(maxHeight);
+        this.$('#stage').height(maxHeight);
+        this.$('#wrapmiddle').height(maxHeight);
         this.$('#stage').css({'max-height': maxHeight + 'px'});
         this.$('.stage-video').css({'max-height': maxHeight + 'px'});
-        this.$('#no-participant').height(window.innerHeight - 169);
+        this.$('#no-participant').height(maxHeightEmpty);
         this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
+
+        this.$('#fullButton').tooltip();
 	},
 
 	getRenderData: function(){
+    },
+
+    onFullScreen: function() {
+
+        var maxHeight = window.innerHeight - 75;
+        var maxHeightEmpty = window.innerHeight - 169; 
+
+        isFullScreen = !isFullScreen;
+
+        if(isFullScreen) {
+            maxHeight = window.innerHeight - 20;
+            maxHeightEmpty = window.innerHeight - 124; 
+        }
+
+        this.$('.left').toggle('slide');
+        this.$('.right').toggle('slide');
+        this.$('#header').toggle('slide');
+
+        this.$('#no-participant').height(maxHeightEmpty);
+        this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
+
+        this.$('#stage').height(maxHeight);
+        this.$('#stage').css({'max-height': maxHeight + 'px'});
+        this.$('.stage-video').css({'max-height': maxHeight + 'px'});
+
+        
+        if(isFullScreen) {
+            this.$("#no-participant").addClass( "no-participant-full", 1000, "easeOutBounce" );
+            this.$("#stage").addClass( "middle-full", 1000, "easeOutBounce" );
+            this.$('#exitFullScreen').removeClass('hidden', 1000, "easeOutBounce");
+        }
+        else {
+            this.$("#no-participant").removeClass( "no-participant-full", 1000, "easeOutBounce" );
+            this.$("#stage").removeClass( "middle-full", 1000, "easeOutBounce" );
+            this.$('#exitFullScreen').addClass('hidden', 1000, "easeOutBounce");
+        }
+
+        
     },
 
     onTransportError: function() {
@@ -111,7 +156,26 @@ module.exports = View.extend({
         else {
             alert('Oups! GetUserMedia flag should be set to activated in chrome://flags');    
         }
-        
+    },
+
+    onInvite: function() {
+
+        var title = "[Ramdam] Invite to join the conference '" + me.getConferenceTitle() + "'";
+
+        var body = "Hi, \n\nYou are invited to join the conference '" + me.getConferenceTitle() + "'\n\n"
+        + "To join the conference:"
+        + "\n- Click on the link below"
+        + "\n- Enter a nickname"
+        + "\n- Enter your access code:" + me.getConferenceCode()
+        + "\n\n" + document.location.origin
+        + "\n\nConference Access code: " + me.getConferenceCode()
+        + "\n\nHave fun"
+        + "\nRamdam,"
+        + "\nAlcatel-Lucent Enterprise";
+
+        var mailto_link = 'mailto:' + '?subject=' + escape(title) + '&body=' + escape(body);
+
+        window.location.href=mailto_link;
     },
 
     onAddFile: function(model) {
@@ -226,12 +290,17 @@ module.exports = View.extend({
         var maxHeight = window.innerHeight - 75;
         var maxHeightEmpty = window.innerHeight - 169; 
 
-        this.$('#data').height(window.innerHeight - 75);
-        this.$('#stage').height(window.innerHeight - 75);
+        if(isFullScreen) {
+            maxHeight = window.innerHeight - 20;
+            maxHeightEmpty = window.innerHeight - 124;
+        }
+
+        this.$('#data').height(maxHeight);
+        this.$('#stage').height(maxHeight);
         this.$('#stage').css({'max-height': maxHeight + 'px'});
-        this.$('#wrapmiddle').height(window.innerHeight - 75);
+        this.$('#wrapmiddle').height(maxHeight);
         this.$('.stage-video').css({'max-height': maxHeight + 'px'});
-        this.$('#no-participant').height(window.innerHeight - 169);
+        this.$('#no-participant').height(maxHeightEmpty);
         this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
     },
 
@@ -386,21 +455,21 @@ module.exports = View.extend({
         media.connectToServer(caps, me.getConferenceCode());
     },
 
-    onConferenceTitleChange: function(data) {
+    onConferenceTitleChange: function() {
+
+        this.$('.title').text(me.getConferenceTitle());
+
         if(me.getMode() !== "pingme") {
-            this.$('.title').text(me.getConferenceTitle() + ' (' + me.getConferenceCode() + ')');
-        }
-        else {
-            this.$('.title').text(me.getConferenceTitle());   
+            this.$('.appName').text("Ramdam > " + me.getConferenceCode());
         }
     },
 
     updateConferenceTitle: function() {
+
+        this.$('.title').text(me.getConferenceTitle());
+
         if(me.getMode() !== "pingme") {
-            this.$('.title').text(me.getConferenceTitle() + ' (' + me.getConferenceCode() + ')');
-        }
-        else {
-            this.$('.title').text(me.getConferenceTitle());   
+            this.$('.appName').text("Ramdam > " + me.getConferenceCode());
         }
     },
 
