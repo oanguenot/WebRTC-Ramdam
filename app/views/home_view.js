@@ -27,30 +27,27 @@ module.exports = View.extend({
         'click .filterCapability'   : 'onCapabilityClick',
 
         'click #joinExistingButton' : 'onJoinExistingConference',
-        'click #joinNewButton'      : 'onJoinNewConference'
+        'click #joinNewButton'      : 'onJoinNewConference',
+
+        'click #installPlugin'      : 'onExtensionInstall'
     },
 
-/*
     subscriptions: {
-        'media:localStreamStarted': 'onLocalMediaStarted'
+        'extension:found': 'onExtensionFound'
     },
-*/
 
     initialize: function() {
         this.listenTo(me.getConference(), 'change:id', this.onConferenceIDChange);
     },
 
     afterRender: function(){
-    	//media.acquireCamera();
     },
 
-/*
-    onLocalMediaStarted: function(stream) {
-    	media.renderStream(this.$('#local-video')[0]);
-        isMediaReady = true;
-        this.updateJoinButton();
+    onExtensionFound: function() {
+        this.$('.extension-label').text('RAMDAM App Sharing Extension detected');
+        this.$('.extension-image').attr('src', './images/extension_ok.png');
+        this.$('#installPlugin').hide();  
     },
-*/
 
     onJoinRequest: function(e) {
         e.preventDefault();
@@ -164,5 +161,16 @@ module.exports = View.extend({
 
     onConferenceIDChange: function() {
         Backbone.Mediator.publish('goto', 'mainPage');
+    },
+
+    onExtensionInstall: function() {
+        chrome.webstore.install('https://chrome.google.com/webstore/detail/oogjpemgamiahbhfflabaejkcajfnaak',
+            function() {
+                window.location.reload();
+            }, 
+            function(err) {
+                console.log("canceled", err);
+            }
+        );
     }
 });

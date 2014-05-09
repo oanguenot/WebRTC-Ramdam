@@ -28,6 +28,17 @@ module.exports = View.extend({
 	},
 
 	afterRender: function(){
+
+        var that = this;
+
+        this.$('.participant-video')[0].addEventListener('loadedmetadata', function(data) {
+            var height = data.target.offsetHeight - 18;
+            var width = data.target.offsetWidth - 14;
+
+            that.$('.participant-nickname').css({'top': height + 'px'});
+            that.$('.participant-nickname').css({'width': width + 'px'});
+
+        });
 	},
 
 	getRenderData: function(){
@@ -36,29 +47,6 @@ module.exports = View.extend({
             title: this.participant.title
         };
     },
-
-/*
-    displayMessage: function(message) {
-    	var that = this;
-
-    	this.$('.participant-nickname').fadeOut(function() {
-  			$(this).text(message).fadeIn();
-		});
-
-    	//this.$('.me-nickname').text(message);
-    	this.$('.participant-nickname').attr('title', message);
-
-    	clearTimeout(timeoutID);
-
-    	timeoutID = setTimeout(function() {
-			that.$('.participant-nickname').text(that.options.participant.nickname);
-    		that.$('.participant-nickname').attr('title', that.options.participant.nickname);    		
-    	}, 10000);
-    },
-
-    onVideoClick: function() {
-    },
-*/
 
     displayVideo: function() {
         this.media.displayParticipantVideo(this.$('.participant-video')[0], this.participant.id);

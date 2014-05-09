@@ -23,6 +23,17 @@ module.exports = View.extend({
 
 	afterRender: function(){
 		$(this.el).attr('id', this.options.participant.id);
+
+        var that = this;
+
+        this.$('.participant-video')[0].addEventListener('loadedmetadata', function(data) {
+            var height = data.target.offsetHeight - 18;
+            var width = data.target.offsetWidth - 14;
+
+            that.$('.participant-nickname').css({'top': height + 'px'});
+            that.$('.participant-nickname').css({'width': width + 'px'});
+
+        });
 	},
 
 	getRenderData: function(){

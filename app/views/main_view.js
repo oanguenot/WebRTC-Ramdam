@@ -100,7 +100,7 @@ module.exports = View.extend({
         this.$('.stage-video').css({'max-height': maxHeight + 'px'});
         this.$('#no-participant').height(maxHeightEmpty);
         this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
-
+        
         this.$('#fullButton').tooltip();
 	},
 
@@ -142,6 +142,13 @@ module.exports = View.extend({
             this.$('#exitFullScreen').addClass('hidden', 1000, "easeOutBounce");
         }
 
+        if(this.$('.stage-video') && this.$('.stage-video')[0]) {
+            var height = this.$('.stage-video')[0].offsetHeight - 25;
+            var width = this.$('.stage-video')[0].offsetWidth - 14;
+
+            this.$('.stage-title').css({'top': height + 'px'});
+            this.$('.stage-title').css({'width': width + 'px'});    
+        }
         
     },
 
@@ -302,6 +309,14 @@ module.exports = View.extend({
         this.$('.stage-video').css({'max-height': maxHeight + 'px'});
         this.$('#no-participant').height(maxHeightEmpty);
         this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
+
+        if(this.$('.stage-video') && this.$('.stage-video')[0]) {
+            var height = this.$('.stage-video')[0].offsetHeight - 25;
+            var width = this.$('.stage-video')[0].offsetWidth - 14;
+
+            this.$('.stage-title').css({'top': height + 'px'});
+            this.$('.stage-title').css({'width': width + 'px'});    
+        }
     },
 
     onParticipantConnected: function(id, caps) {

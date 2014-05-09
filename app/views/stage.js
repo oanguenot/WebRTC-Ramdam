@@ -25,6 +25,18 @@ module.exports = View.extend({
 	},
 
 	afterRender: function(){
+        var that = this;
+
+        this.$('.stage-video')[0].addEventListener('loadedmetadata', function(data) {
+            var height = data.target.offsetHeight - 25;
+            var width = data.target.offsetWidth - 14;
+
+            that.$('.stage-title').css({'top': height + 'px'});
+            that.$('.stage-title').css({'width': width + 'px'});
+        });
+
+        
+
 	},
 
 	getRenderData: function(){
