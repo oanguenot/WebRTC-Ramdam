@@ -1989,10 +1989,12 @@ WebSocketTransport.prototype = {
             Sonotone.log("TRANSPORT", "Try to connect to SIG server");
             
             if(this._port) {
-                this._socket = new WebSocket("ws://" + this._host + ":" + this._port);
+                console.log("LOCAL", "wss://localhost:8882");
+                //this._socket = new WebSocket("wss://" + this._host + ":" + this._port);
+                this._socket = new WebSocket("wss://localhost:8882");
             }
             else {
-                this._socket = new WebSocket("ws://" + this._host);
+                this._socket = new WebSocket("wss://" + this._host);
             }
 
             this._room = code;

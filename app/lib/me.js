@@ -93,7 +93,6 @@ module.exports = {
 				title: conferenceName
 			}
 		}).done(function ( data ) {
-			console.log("coucou");
 			conference.set(data);
 		}).fail(function ( data ) {
 			console.log("ERROR:", data);

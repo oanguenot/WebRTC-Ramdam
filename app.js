@@ -1,22 +1,19 @@
 
-/*
-var http = require('http'),
-	express = require('express'),
-    app = express(),
-    server = http.createServer(app);
-*/
+var https 			= require('https'),				// HTTPS module
+    http            = require('http'),              // HTTP module
+    fs              = require('fs'),                // File System
+	WebSocketServer = require('websocket').server,	// Websocket module
+	express         = require('express'),			// Static Web content handler
+    app             = express();					// Start express
 
-var express = require('express'), 
-	WebSocketServer = require('websocket').server, 
-	fs = require('fs'),
-	http = require('http'),
-	https = require('https'), 
-	app = express();
+
 
 var options = {
   key: fs.readFileSync('privatekey.pem'),
-  cert: fs.readFileSync('certificate.pem')
+  cert: fs.readFileSync('certificate.pem'),
 };
+
+app.use(express.static(__dirname + '/public'));
 
 var env = 'local';
 var port = 8881;
@@ -24,38 +21,52 @@ var port = 8881;
 var server = null,
 	serverHttps = null;
 
-
 if(process.env.PORT) {
+	console.log("Launched in Cloud mode");
 	port = process.env.PORT;
 	env = 'remote';
 }
+else {
+	console.log("Launched in Local mode");
+}
 
 // Create http server and pass the express app as the handler. 
-server = http.createServer(app);
 
 if(env === "local") {
 	serverHTTPS = https.createServer(options, app);
+	serverHTTPS.listen(8882, function() {
+    	console.log((new Date()) + ' secure server listening on port ' + '8882');
+	});
+}
+else {
+	server = http.createServer(app);
+	server.listen(port);
 }
 
-// Create the websocket server passing the same server instance. 
-var wsServer = new WebSocketServer({ 
-	httpServer: server 
-});
+var wsServer = null;
 
-exports.startServer = function() {
-};
+if(env === "local") {
+	console.log("Create WSS for local mode");
+	wsServer = new WebSocketServer({ 
+		httpServer: serverHTTPS
+	});
+}
+else {
+	console.log("Create WSS for cloud mode");
+	wsServer = new WebSocketServer({ 
+		httpServer: server
+	});	
+}
 
-app.use(express.static(__dirname + '/public'));
 app.use(express.cookieParser());
 app.use(express.bodyParser());
 app.use(app.router);
 
-console.log('Modulus demo app started on port ' + port);
+exports.startServer = function() {
+};
 
-var router = require('./app/server/router')(wsServer, app);
 
-server.listen(port);
+var router = null;
 
-if(env === 'local') {
-	serverHTTPS.listen(8882);	
-}
+router = require('./app/server/router')(wsServer, app);	
+

@@ -18,7 +18,9 @@ Sonotone.STUN = {
 
 var io = null;
 
-var sono = new Sonotone.IO(new Date().getTime().toString());
+var turn = {"iceServers": [{"url": "stun:52.17.218.155:80"}, {"url": "turn:52.17.218.155:80?transport=tcp", credentials:'youdontknowjs', username: 'alice'}]};
+
+var sono = new Sonotone.IO(new Date().getTime().toString(), turn );
 
 //var editorExtensionId = "meccllpfhfmamingegojnnbpglmehhdf";
 var editorExtensionId = 'oogjpemgamiahbhfflabaejkcajfnaak';
@@ -155,7 +157,7 @@ module.exports = {
 	connectToServer: function(caps, room) {
 
 		sono.transport('websocket', {host: window.location.hostname, port: null});
-		//sono.transport('websocket', {host: '192.168.0.126', port: '8881'});
+		//sono.transport('websocket', {host: '192.168.0.126', port: '8882'});
 		//sono.transport('websocket', {host: '172.26.134.23', port: '8881'});            
 		//sono.transport('websocket', {host: '172.26.165.198', port: '8881'});            
 		//sono.transport('websocket', {host: '10.0.6.169', port: '8881'});            

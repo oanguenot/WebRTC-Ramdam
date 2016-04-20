@@ -77,17 +77,21 @@ module.exports = View.extend({
 	},
 
 	afterRender: function(){
+
+        $('body').css({'background-color': '#fff'});
+
         media.acquireCamera(me.hasAudio(), me.hasVideo());
         this.updateConferenceTitle();
 
         var maxHeight = window.innerHeight - 75;
-        var maxHeightEmpty = window.innerHeight - 169;
+        //var maxHeightEmpty = window.innerHeight - 169;
+        var maxHeightEmpty = window.innerHeight - 75;
 
         if(me.getMode() === 'pingme') {
-            this.$('#ramdam-actions').addClass('hidden');   
-            this.$('.middle').addClass('middlePingme');
-            this.$('.right').addClass('rightPingme');
-            this.$('.no-participant').addClass('no-participantPingme'); 
+            //this.$('#ramdam-actions').addClass('hidden');   
+            //this.$('.middle').addClass('middlePingme');
+            //this.$('.right').addClass('rightPingme');
+            //this.$('.no-participant').addClass('no-participantPingme'); 
         }
         else {
             //this.$('.appName').text('Ramdam');
@@ -100,6 +104,7 @@ module.exports = View.extend({
         this.$('.stage-video').css({'max-height': maxHeight + 'px'});
         this.$('#no-participant').height(maxHeightEmpty);
         this.$('#no-participant').css({'max-height': maxHeightEmpty + 'px'});
+        this.$('#no-participant').css({'line-height': maxHeightEmpty + 'px'});
         
         this.$('#fullButton').tooltip();
 	},
@@ -110,13 +115,13 @@ module.exports = View.extend({
     onFullScreen: function() {
 
         var maxHeight = window.innerHeight - 75;
-        var maxHeightEmpty = window.innerHeight - 169; 
+        var maxHeightEmpty = window.innerHeight - 75; 
 
         isFullScreen = !isFullScreen;
 
         if(isFullScreen) {
             maxHeight = window.innerHeight - 20;
-            maxHeightEmpty = window.innerHeight - 124; 
+            maxHeightEmpty = window.innerHeight - 20; 
         }
 
         this.$('.left').toggle('slide');
@@ -167,28 +172,48 @@ module.exports = View.extend({
 
     onInvite: function() {
 
-        var title = "[Ramdam] Invite to join the conference '" + me.getConferenceTitle() + "'";
+        var name = "Ramdam";
+        if(me.getMode() === 'pingme') {
+            name = 'OpenTouch Lite';
+        }
 
-        var body = "Hi, \n\nYou are invited to join the conference '" + me.getConferenceTitle() + "'\n\n"
-        + "To join the conference:"
-        + "\n- Click on the link below"
-        + "\n- Enter a nickname"
-        + "\n- Enter your access code:" + me.getConferenceCode()
-        + "\n\n" + document.location.origin
-        + "\n\nConference Access code: " + me.getConferenceCode()
-        + "\n\nHave fun"
-        + "\nRamdam,"
-        + "\nAlcatel-Lucent Enterprise";
+        var title = "[" + name + "] Invite to join the conference '" + me.getConferenceTitle() + "'";
 
-        var mailto_link = 'mailto:' + '?subject=' + escape(title) + '&body=' + escape(body);
+        var anonymous = 'Anonymous' + Math.floor(Math.random()*100000);
 
-        window.location.href=mailto_link;
+        var body = "Hi, \n\nYou are invited to join the conference '" + me.getConferenceTitle() + "'\n\n";
+        
+        if(me.getMode() === 'pingme') {
+            body += "To join the conference automatically:"
+            + "\n- Click on the link below"
+            + "\n\n" + document.location.origin +"#ping?un=" + anonymous + "&rn="+ me.getConferenceCode() + "&cn=" + me.getConferenceTitle()
+        }
+        else {
+            body += "To join the conference manually:"
+            + "\n- Click on the link below"
+            + "\n- Enter a nickname"
+            + "\n- Enter your access code:" + me.getConferenceCode()
+            + "\n\n" + document.location.origin    
+        }
+        
+        body += "\n\nHave fun"
+        + "\n" + name + ","
+        + "\nALE International - 2015";
+
+        var mailto_link = 'mailto:' + '?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+
+        //window.location.href=mailto_link;
+        var win = window.open(mailto_link);
+        if(win) {
+            setTimeout(function() {
+                win.close();
+            }, 100);
+        }
     },
 
     onAddFile: function(model) {
         var ui = new FileUI({model: model }).render();
 
-        //this.$('#fileList').prepend(ui.el);
         this.$('#dataList').prepend(ui.el);
     },
 
@@ -251,6 +276,7 @@ module.exports = View.extend({
     },
 
     onShareScreen: function() {
+        console.log("aquire");
         media.acquireScreen();
     },
 
@@ -295,11 +321,12 @@ module.exports = View.extend({
     onResize: function() {
 
         var maxHeight = window.innerHeight - 75;
-        var maxHeightEmpty = window.innerHeight - 169; 
+        // var maxHeightEmpty = window.innerHeight - 169; 
+        var maxHeightEmpty = window.innerHeight - 75; 
 
         if(isFullScreen) {
             maxHeight = window.innerHeight - 20;
-            maxHeightEmpty = window.innerHeight - 124;
+            maxHeightEmpty = window.innerHeight - 20;
         }
 
         this.$('#data').height(maxHeight);
@@ -457,9 +484,12 @@ module.exports = View.extend({
             title: me.nickname()
         };
 
+
         participantLocal = new Local({participant: participant, el: this.$('#me')}).render();
 
         media.renderLocalStream(this.$('#' + id + '-video')[0]);
+
+        this.$('#' + id + '-video').prop('muted', true); 
 
         var caps = {
             nickname: me.nickname(),
